@@ -86,4 +86,4 @@ class TestReqres:
             response = httpx.get(BASE_URL + NOT_FOUND_RESOURCE, headers=API_KEY)
 
         with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200, f"Неверный статус код"
+            assert response.status_code == 404, f"Неверный статус код"
