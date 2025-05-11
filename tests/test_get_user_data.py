@@ -84,3 +84,6 @@ class TestReqres:
     def test_get_resource_not_found(self):
         with allure.step("Отправка запроса для получения данных несуществующего ресурса"):
             response = httpx.get(BASE_URL + NOT_FOUND_RESOURCE, headers=API_KEY)
+
+        with allure.step("Проверка статуса ответа"):
+            assert response.status_code == 200, f"Неверный статус код"
