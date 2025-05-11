@@ -10,6 +10,7 @@ LIST_USERS = "/users?page=2"
 EMAIL_ENDS = "@reqres.in"
 AVATAR_ENDS = f"-image.jpg"
 SINGLE_USER = "/users/2"
+NOT_FOUND_USER = "/users/23"
 
 class TestUserData:
     @allure.title("Получение списка пользователей")
