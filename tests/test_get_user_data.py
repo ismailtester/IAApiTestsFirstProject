@@ -12,39 +12,45 @@ AVATAR_ENDS = f"-image.jpg"
 SINGLE_USER = "/users/2"
 NOT_FOUND_USER = "/users/23"
 
+
+@allure.suite("Проверка запросов данных пользователей")
 class TestUserData:
     @allure.title("Получение списка пользователей")
     def test_get_list_users(self):
-        with allure.step("Отправка запроса для получения списка пользователей"):
+        with allure.step(f"Отправка запроса для получения списка пользователей по URL: {BASE_URL + LIST_USERS}"):
             response = httpx.get(BASE_URL + LIST_USERS, headers=API_KEY)
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200, f"Неверный статус код"
+        with allure.step("Проверка статус-кода ответа"):
+            assert response.status_code == 200, f"Ожидался 200, получили {response.status_code}"
 
-        with allure.step("Валидация данных пользователей"):
-            data = response.json()["data"]
-            for item in data:
+        data = response.json()["data"]
+        for item in data:
+            with allure.step("Проверка данных пользователей по JSON-схеме"):
                 validate(item, USER_DATA_SCHEMA)
-                assert item["email"].endswith(EMAIL_ENDS), f"Email пользователя должен заканчиваться на {EMAIL_ENDS}"
-                assert item["avatar"].endswith(str(item["id"]) + AVATAR_ENDS), f"Ссылка на аватар пользователя должна содержать ID и заканчиваться на {AVATAR_ENDS}"
+                with allure.step("Проверка окончания email-адреса"):
+                    assert item["email"].endswith(EMAIL_ENDS), f"Email пользователя должен заканчиваться на {EMAIL_ENDS}"
+                with allure.step("Проверка наличия ID в URL аватара"):
+                    assert item["avatar"].endswith(str(item["id"]) + AVATAR_ENDS), f"Ссылка на аватар пользователя должна содержать ID и заканчиваться на {AVATAR_ENDS}"
 
     @allure.title("Получение информации об одном пользователе")
     def test_get_single_user(self):
-        with allure.step("Отправка запроса для получения данных об одном пользователе"):
+        with allure.step("Отправка запроса на получение данных пользователя"):
             response = httpx.get(BASE_URL + SINGLE_USER, headers=API_KEY)
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200, f"Неверный статус код"
+        with allure.step("Проверка статус-кода ответа"):
+            assert response.status_code == 200, f"Ожидался 200, получили {response.status_code}"
 
-        with allure.step("Валидация данных пользователя"):
+        with allure.step("Валидация данных пользователя по JSON-схеме"):
             data = response.json()["data"]
-            assert data["email"].endswith(EMAIL_ENDS), f"Отсутствует reqres.in в конце email"
-            assert data["avatar"].endswith(str(data["id"]) + AVATAR_ENDS), f"В ссылке на аватарку, отсутствует ID пользователя"
+            with allure.step("Проверка окончания email-адреса"):
+                assert data["email"].endswith(EMAIL_ENDS), f"Отсутствует reqres.in в конце email"
+            with allure.step("Проверка наличия ID в URL аватара"):
+                assert data["avatar"].endswith(str(data["id"]) + AVATAR_ENDS), f"В ссылке на аватарку, отсутствует ID пользователя"
 
-    @allure.title("Попытка получить информацию о несуществующем пользователе")
+    @allure.title("Получение несуществующего пользователя — ожидаем 404")
     def test_get_user_not_found(self):
-        with allure.step("Отправка запроса для получения данных несуществующего пользователя"):
+        with allure.step("Отправка запроса на несуществующего пользователя"):
             response = httpx.get(BASE_URL + NOT_FOUND_USER, headers=API_KEY)
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 404, f"Неверный статус код"
+        with allure.step("Проверка статус-кода ответа"):
+            assert response.status_code == 404, f"Ожидался 404, получили {response.status_code}"
