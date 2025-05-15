@@ -43,3 +43,40 @@ RESOURCE_DATA_SCHEMA = {
     "required": ["id", "name", "year", "color", "pantone_value"],
     "additionalProperties": False
 }
+
+CREATED_USER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "job": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "createdAt": {
+            "type": "string"
+        }
+    },
+    "required": ["id"],
+    "additionalProperties": False
+}
+
+UPDATED_USER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "job": {
+            "type": "string"
+        },
+        "updatedAt": {
+            "type": "string"
+        }
+    },
+    "required": ["updatedAt"],
+    "additionalProperties": False
+}
