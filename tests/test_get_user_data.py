@@ -7,6 +7,7 @@ from core.contracts import USER_DATA_SCHEMA
 BASE_URL = "https://reqres.in/api"
 API_KEY = {"x-api-key": "reqres-free-v1"}  # Ключ API для того чтобы запросы не падали с 401 ошибкой.
 LIST_USERS = "/users?page=2"
+DELAYED_USERS_LIST = "/users?delay=3"
 EMAIL_ENDS = "@reqres.in"
 AVATAR_ENDS = f"-image.jpg"
 SINGLE_USER = "/users/2"
@@ -54,3 +55,21 @@ class TestUserData:
 
         with allure.step("Проверка статус-кода ответа"):
             assert response.status_code == 404, f"Ожидался 404, получили {response.status_code}"
+
+    @allure.title("Получение списка пользователей c задержкой (GET)")
+    def test_get_delayed_user_list(self):
+        with allure.step(f"Отправка GET запроса для получения списка пользователей по URL: {BASE_URL + DELAYED_USERS_LIST}"):
+            response = httpx.get(BASE_URL + DELAYED_USERS_LIST, headers=API_KEY, timeout=4)
+
+        with allure.step("Проверка статус-кода ответа"):
+            assert response.status_code == 200, f"Ожидался 200, получили {response.status_code}"
+
+        data = response.json()["data"]
+        for item in data:
+            with allure.step("Проверка данных пользователей по JSON-схеме"):
+                validate(item, USER_DATA_SCHEMA)
+                with allure.step("Проверка окончания email-адреса"):
+                    assert item["email"].endswith(EMAIL_ENDS), f"Email пользователя должен заканчиваться на {EMAIL_ENDS}"
+                with allure.step("Проверка наличия ID в URL аватара"):
+                    assert item["avatar"].endswith(str(item["id"]) + AVATAR_ENDS), f"Ссылка на аватар пользователя должна содержать ID и заканчиваться на {AVATAR_ENDS}"
+
