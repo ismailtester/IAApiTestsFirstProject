@@ -80,3 +80,28 @@ UPDATED_USER_SCHEMA = {
     "required": ["updatedAt"],
     "additionalProperties": False
 }
+
+REGISTERED_USER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "token": {
+            "type": "string"
+        }
+    },
+    "required": ["id", "token"],
+    "additionalProperties": False
+}
+
+LOGGED_IN_USER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "token": {
+            "type": "string"
+        }
+    },
+    "required": ["token"],
+    "additionalProperties": False
+}
